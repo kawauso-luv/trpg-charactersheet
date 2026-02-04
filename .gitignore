@@ -1,0 +1,46 @@
+# =========================
+# Node / React / Vite
+# =========================
+node_modules/
+dist/
+build/
+
+# Vite
+.vite/
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs
+# =========================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# =========================
+# Google Apps Script (clasp)
+# =========================
+.clasp.json
+appsscript.json
+
+# clasp の一時ファイル
+.claspignore
+
+# =========================
+# TypeScript
+# =========================
+*.tsbuildinfo
