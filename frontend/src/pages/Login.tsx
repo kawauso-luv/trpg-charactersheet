@@ -1,20 +1,46 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+type LoginResponse =
+  | { success: true; userId: string }
+  | { success: false; message: string }
+
 export default function Login() {
   const navigate = useNavigate()
 
   const [userId, setUserId] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault() // ページリロード防止
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
 
-    // 仮のログイン成功条件
-    if (userId && password) {
-      navigate('/')
-    } else {
-      alert('ユーザーIDとパスワードを入力してください')
+    try {
+      const response = await fetch('/api/exec', {
+      method: 'POST',
+      body: new URLSearchParams({
+        action: 'login',
+        userId,
+        password,
+      }),
+    })
+
+      const data = (await response.json()) as LoginResponse
+
+      if (data.success) {
+        localStorage.setItem('userId', data.userId)
+        navigate('/')
+      } else {
+        setError(data.message)
+      }
+    } catch (err) {
+      setError('通信エラーが発生しました')
+      console.error(err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -24,28 +50,28 @@ export default function Login() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label>
-            ユーザーID：
-            <input
-              type="text"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-            />
-          </label>
+          <input
+            type="text"
+            placeholder="ユーザーID"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+          />
         </div>
 
         <div>
-          <label>
-            パスワード：
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
+          <input
+            type="password"
+            placeholder="パスワード"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
 
-        <button type="submit">ログイン</button>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+
+        <button type="submit" disabled={loading}>
+          {loading ? 'ログイン中...' : 'ログイン'}
+        </button>
       </form>
     </div>
   )
